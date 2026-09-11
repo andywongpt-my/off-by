@@ -1,0 +1,18 @@
+.gi:contentReference[oaicite:0]{index=0}官方的：
+
+- `actions/checkout@v6`
+- `actions/configure-pages@v5`
+- `actions/upload-pages-artifact@v4`
+- `actions/deploy-pages@v4`
+
+这也是 GitHub 当前官方推荐的 Pages Actions 部署方式。:contentReference[oaicite:1]{index=1}
+
+目前 404 的根因不是 `index.html`；GitHub 还没有运行过任何部署任务，所以 Pages site 尚未建立。
+
+**你把 Source 改成 `GitHub Actions` 后回复我 `done`。**
+
+我下一步会直接：
+1. 再 push 一个触发 commit；
+2. 检查 Actions run；
+3. 如果失败，直接读取失败 job/log；
+4. 修到 `https://andywongpt-my.github.io/off-by/` 正常打开为止。
