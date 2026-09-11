@@ -1,6 +1,7 @@
 /* OFF BY v5 — mobile-first overrides */
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{overscroll-behavior-y:none;-webkit-font-smoothing:antialiased}
+body.timing-active{overscroll-behavior:none}
 button,a,input{-webkit-tap-highlight-color:transparent}
 button,.action,.tab,.identity button{touch-action:manipulation;min-height:44px}
 .hold{touch-action:none;-webkit-touch-callout:none;min-height:60px}
@@ -56,6 +57,22 @@ button,.action,.tab,.identity button{touch-action:manipulation;min-height:44px}
   .action.primary{grid-column:1/-1;min-height:54px;font-size:14px}
   .action.daily{grid-column:1/-1}
   footer{padding:20px 2px max(24px,calc(env(safe-area-inset-bottom) + 16px));font-size:9px;line-height:1.5}
+}
+
+@media (max-width:650px){
+  .global-board{margin-bottom:28px;padding:16px 12px;border-radius:18px}
+  .board-head{gap:14px;padding-bottom:14px}
+  .board-head h2{font-size:21px;margin-top:5px}
+  .identity{width:100%;min-width:0}
+  .identity label{font-size:9px}
+  .identity input{font-size:16px;min-height:48px;padding:10px 12px}
+  .identity button{min-width:72px;font-size:12px}
+  .board-status{padding:18px 4px}
+  .leader-row{grid-template-columns:38px minmax(0,1fr) auto;gap:8px;padding:12px 4px}
+  .leader-name{font-size:12px}
+  .leader-score{font-size:15px}
+  .leader-row.me{margin:0 -4px;padding-left:10px;padding-right:10px}
+  .board-foot{font-size:9px;margin-top:12px}
 }
 
 @media (max-width:520px){
