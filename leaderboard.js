@@ -17,7 +17,7 @@ function render(data,mode){
   $('globalCount').textContent=Number.isFinite(+data.participants)?data.participants:'—';
   const leaders=Array.isArray(data.leaders)?data.leaders:[];
   $('boardStatus').classList.toggle('hidden',leaders.length>0);
-  $('boardStatus').textContent=leaders.length?'': 'No scores yet. You could be first.';
+  $('boardStatus').textContent=leaders.length?'':'No scores yet. You could be first.';
   const me=clientId();
   $('leaderRows').innerHTML=leaders.map((r,i)=>`<div class="leader-row ${r.client_id===me?'me':''}"><div class="leader-rank">${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</div><div class="leader-name">${esc(r.player_tag||'ANON')}</div><div class="leader-score">${esc(scoreLabel(mode,r.score))}</div></div>`).join('');
 }
@@ -38,5 +38,5 @@ async function submitResult(){
 let wasVisible=false;
 const result=$('result');if(result)new MutationObserver(()=>{const visible=!result.classList.contains('hidden');if(visible&&!wasVisible)submitResult();wasVisible=visible}).observe(result,{attributes:true,attributeFilter:['class']});
 $('sprintTab')?.addEventListener('click',()=>setTimeout(()=>loadBoard('sprint'),0));$('dailyTab')?.addEventListener('click',()=>setTimeout(()=>loadBoard('daily'),0));
-loadBoard('sprint');
+loadBoard(currentMode());
 })();
