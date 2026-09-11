@@ -1,0 +1,107 @@
+/* OFF BY v5 — mobile-first overrides */
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{overscroll-behavior-y:none;-webkit-font-smoothing:antialiased}
+button,a,input{-webkit-tap-highlight-color:transparent}
+button,.action,.tab,.identity button{touch-action:manipulation;min-height:44px}
+.hold{touch-action:none;-webkit-touch-callout:none;min-height:60px}
+.wrap{padding-left:max(28px,env(safe-area-inset-left));padding-right:max(28px,env(safe-area-inset-right))}
+.toast{bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px))}
+
+@media (pointer:coarse){
+  button,.action,.tab,.identity button{min-height:48px}
+  .hold{min-height:64px;font-size:17px}
+  .hold:active,.action:active,.tab:active{transform:scale(.985)}
+}
+
+@media (max-width:900px){
+  body{min-height:100dvh}
+  .wrap{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+  .top{min-height:60px;padding-top:env(safe-area-inset-top);gap:10px}
+  .logo{font-size:23px}
+  .badge{font-size:9px;padding:6px 9px;white-space:nowrap}
+  .mini{display:none}
+  main{display:flex;flex-direction:column;gap:24px;padding:12px 0 28px}
+  .game{order:-1;max-width:560px;width:100%;margin:0 auto}
+  .hero{order:2;padding:2px 4px 0;text-align:center}
+  .eyebrow{font-size:9px}
+  .hero h1{font-size:clamp(42px,13vw,62px);line-height:.96;letter-spacing:-3.5px;margin:18px 0 14px}
+  .hero p{font-size:15px;line-height:1.5;margin:0 auto;max-width:430px}
+  .stats{margin:22px auto 0;max-width:520px}
+  .pitch{margin:14px auto 0;max-width:520px;text-align:left}
+  .card{border-radius:20px;box-shadow:0 6px 0 -3px #e4e4d9,0 18px 38px -34px #666}
+  .tabs{padding:6px;gap:5px}
+  .tab{padding:10px 8px;border-radius:12px;font-size:14px}
+  .panel{padding:16px 14px 14px}
+  .topline{font-size:9px;padding:0 2px}
+  .target{width:min(54vw,210px);height:min(54vw,210px);margin:14px auto 12px}
+  .target strong{font-size:clamp(43px,12vw,54px);letter-spacing:-3px}
+  .target small{font-size:9px;margin-bottom:6px}
+  .target span{font-size:9px;margin-top:5px}
+  .feedback{min-height:34px;font-size:12px;padding:0 8px}
+  .hint{font-size:9px;margin-top:10px}
+  .dots{margin-top:12px}
+  .dot{width:28px}
+  .challenge{margin-bottom:8px;padding:10px 12px;border-radius:12px}
+  .result{padding:22px 14px 16px}
+  .score{font-size:clamp(54px,18vw,72px);margin:8px 0 2px}
+  .score small{font-size:16px}
+  .result h2{font-size:23px;margin-bottom:6px}
+  .roast{font-size:14px;margin-bottom:14px}
+  .metrics{margin-bottom:12px}
+  .metrics div{padding:12px 8px}
+  .metrics strong{font-size:17px}
+  .rounds{margin-bottom:12px}
+  .actions{grid-template-columns:1fr 1fr;gap:8px}
+  .action{min-height:50px;padding:12px 8px;font-size:13px;display:grid;place-items:center}
+  .action.primary{grid-column:1/-1;min-height:54px;font-size:14px}
+  .action.daily{grid-column:1/-1}
+  footer{padding:20px 2px max(24px,calc(env(safe-area-inset-bottom) + 16px));font-size:9px;line-height:1.5}
+}
+
+@media (max-width:520px){
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .stat{padding:10px 7px;text-align:center}
+  .stat span{font-size:8px}
+  .stat strong{font-size:15px;margin-top:5px}
+  .pitch{font-size:11px}
+  .actions{grid-template-columns:1fr 1fr}
+  .action.primary,.action.daily{grid-column:1/-1}
+}
+
+@media (max-width:390px){
+  .badge{font-size:8px;padding:5px 7px}
+  .target{width:190px;height:190px}
+  .panel{padding:14px 12px 12px}
+  .hold{min-height:60px}
+  .hero h1{font-size:44px}
+}
+
+@media (max-width:600px) and (max-height:760px){
+  main{padding-top:8px}
+  .top{min-height:54px}
+  .target{width:170px;height:170px;margin:10px auto 8px}
+  .target strong{font-size:44px}
+  .feedback{min-height:30px}
+  .hold{min-height:56px;padding:14px}
+  .hint{display:none}
+  .dots{margin-top:9px}
+}
+
+@media (orientation:landscape) and (max-height:520px) and (max-width:950px){
+  .top{min-height:48px}
+  main{padding:8px 0 20px}
+  .hero{display:none}
+  .game{max-width:700px}
+  .panel{padding:10px 14px}
+  .target{width:132px;height:132px;margin:7px auto}
+  .target strong{font-size:38px}
+  .feedback{min-height:24px}
+  .hold{min-height:48px;padding:11px}
+  .hint,.dots{display:none}
+  footer{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
