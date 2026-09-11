@@ -3,6 +3,22 @@ const coarse=matchMedia('(pointer: coarse)').matches;
 if(!coarse)return;
 document.documentElement.classList.add('coarse-pointer');
 const hold=document.getElementById('hold'),hint=document.querySelector('.hint'),result=document.getElementById('result');
+const main=document.querySelector('main'),hero=document.querySelector('.hero'),board=document.getElementById('globalBoard');
+const mobileLayout=matchMedia('(max-width: 900px)');
+let boardAnchor=null;
+if(board&&main&&hero){
+  boardAnchor=document.createComment('global-board-home');
+  board.parentNode?.insertBefore(boardAnchor,board);
+  const syncBoardPosition=()=>{
+    if(mobileLayout.matches){
+      if(board.parentNode!==main)main.insertBefore(board,hero);
+    }else if(boardAnchor?.parentNode){
+      boardAnchor.parentNode.insertBefore(board,boardAnchor.nextSibling);
+    }
+  };
+  syncBoardPosition();
+  mobileLayout.addEventListener?.('change',syncBoardPosition);
+}
 if(hint)hint.textContent='Press and hold · release when it feels right';
 function buzz(pattern){try{navigator.vibrate?.(pattern)}catch{}}
 if(hold){
