@@ -57,16 +57,22 @@ function getSecretKey() {
   return Deno.env.get("SUPABASE_SECRET_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 }
 
-async function fingerprint(req: Request, salt: string) {
+async function fingerprint(req: Request, secret: string) {
   const ip = (
     req.headers.get("cf-connecting-ip") ||
     req.headers.get("x-real-ip") ||
     req.headers.get("x-forwarded-for") ||
     "unknown"
   ).split(",")[0].trim();
-  const bytes = new TextEncoder().encode(`${salt}|${ip}`);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(ip));
+  return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 Deno.serve(async (req) => {
@@ -77,8 +83,7 @@ Deno.serve(async (req) => {
 
   const url = Deno.env.get("SUPABASE_URL");
   const key = getSecretKey();
-  const salt = Deno.env.get("OFFBY_HASH_SALT");
-  if (!url || !key || !salt || salt.length < 24) return json(req, { error: "server not configured" }, 500);
+  if (!url || !key) return json(req, { error: "server not configured" }, 500);
 
   const db = createClient(url, key, { auth: { persistSession: false } });
 
@@ -129,7 +134,7 @@ Deno.serve(async (req) => {
     score = submittedScore;
   }
 
-  const fp = await fingerprint(req, salt);
+  const fp = await fingerprint(req, key);
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const { count, error: rateError } = await db
     .from("off_by_attempts")
