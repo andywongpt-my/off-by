@@ -37,13 +37,6 @@ jobs:
       - name: Apply database migrations
         run: supabase db push
 
-      - name: Rotate leaderboard fingerprint salt
-        shell: bash
-        run: |
-          set -euo pipefail
-          OFFBY_HASH_SALT="$(openssl rand -hex 48)"
-          supabase secrets set OFFBY_HASH_SALT="$OFFBY_HASH_SALT" --project-ref "$SUPABASE_PROJECT_ID"
-
       - name: Deploy score function
         run: supabase functions deploy off-by-score --project-ref "$SUPABASE_PROJECT_ID"
 
