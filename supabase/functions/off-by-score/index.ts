@@ -25,9 +25,8 @@ function cleanTag(v: unknown) {
   const s=String(v||"").toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,16);
   return /^[A-Z0-9_-]{3,16}$/.test(s) ? s : null;
 }
-async function fingerprint(req: Request) {
-  const ip=(req.headers.get("x-forwarded-for")||req.headers.get("cf-connecting-ip")||"unknown").split(",")[0].trim();
-  const salt=Deno.env.get("OFFBY_HASH_SALT")||"change-me";
+async function fingerprint(req: Request, salt: string) {
+  const ip=(req.headers.get("cf-connecting-ip")||req.headers.get("x-real-ip")||req.headers.get("x-forwarded-for")||"unknown").split(",")[0].trim();
   const bytes=new TextEncoder().encode(`${salt}|${ip}`);
   const digest=await crypto.subtle.digest("SHA-256",bytes);
   return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
@@ -37,8 +36,8 @@ Deno.serve(async (req)=>{
   const origin=req.headers.get("origin")||"";
   if(origin && !allowedOrigins.has(origin)) return json(req,{error:"origin not allowed"},403);
 
-  const url=Deno.env.get("SUPABASE_URL"), key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if(!url||!key) return json(req,{error:"server not configured"},500);
+  const url=Deno.env.get("SUPABASE_URL"), key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), salt=Deno.env.get("OFFBY_HASH_SALT");
+  if(!url||!key||!salt||salt.length<24) return json(req,{error:"server not configured"},500);
   const db=createClient(url,key,{auth:{persistSession:false}});
 
   if(req.method==="GET"){
@@ -55,7 +54,7 @@ Deno.serve(async (req)=>{
   if(mode==="sprint"&&(score<0||score>5000||actualMs==null||!Number.isInteger(actualMs)||actualMs<0||actualMs>10000)) return json(req,{error:"invalid sprint score"},400);
   if(mode==="daily"&&(score<0||score>100||actualMs!==null)) return json(req,{error:"invalid daily score"},400);
 
-  const fp=await fingerprint(req);
+  const fp=await fingerprint(req,salt);
   const since=new Date(Date.now()-60*60*1000).toISOString();
   const {count}=await db.from("off_by_attempts").select("id",{count:"exact",head:true}).eq("request_fingerprint",fp).gte("created_at",since);
   if((count||0)>=60) return json(req,{error:"rate limit"},429);
