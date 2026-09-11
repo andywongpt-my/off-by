@@ -1,0 +1,71 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const allowedOrigins = new Set([
+  "https://andywongpt-my.github.io",
+  "http://localhost:8000",
+  "http://127.0.0.1:8000",
+]);
+
+function cors(req: Request) {
+  const origin = req.headers.get("origin") || "";
+  const allow = allowedOrigins.has(origin) ? origin : "https://andywongpt-my.github.io";
+  return {
+    "access-control-allow-origin": allow,
+    "access-control-allow-methods": "GET,POST,OPTIONS",
+    "access-control-allow-headers": "content-type",
+    "vary": "Origin",
+  };
+}
+function json(req: Request, body: unknown, status=200) {
+  return new Response(JSON.stringify(body), { status, headers: { ...cors(req), "content-type":"application/json; charset=utf-8", "cache-control":"no-store" }});
+}
+function validDate(v: unknown): v is string { return typeof v==="string" && /^\d{4}-\d{2}-\d{2}$/.test(v) }
+function validUuid(v: unknown): v is string { return typeof v==="string" && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v) }
+function cleanTag(v: unknown) {
+  const s=String(v||"").toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,16);
+  return /^[A-Z0-9_-]{3,16}$/.test(s) ? s : null;
+}
+async function fingerprint(req: Request) {
+  const ip=(req.headers.get("x-forwarded-for")||req.headers.get("cf-connecting-ip")||"unknown").split(",")[0].trim();
+  const salt=Deno.env.get("OFFBY_HASH_SALT")||"change-me";
+  const bytes=new TextEncoder().encode(`${salt}|${ip}`);
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+Deno.serve(async (req)=>{
+  if(req.method==="OPTIONS") return new Response(null,{status:204,headers:cors(req)});
+  const origin=req.headers.get("origin")||"";
+  if(origin && !allowedOrigins.has(origin)) return json(req,{error:"origin not allowed"},403);
+
+  const url=Deno.env.get("SUPABASE_URL"), key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if(!url||!key) return json(req,{error:"server not configured"},500);
+  const db=createClient(url,key,{auth:{persistSession:false}});
+
+  if(req.method==="GET"){
+    const u=new URL(req.url), mode=u.searchParams.get("mode"), date=u.searchParams.get("date");
+    if(!["sprint","daily"].includes(mode||"")||!validDate(date)) return json(req,{error:"invalid query"},400);
+    const {data,error}=await db.rpc("off_by_leaderboard",{p_mode:mode,p_date:date,p_limit:10});
+    return error?json(req,{error:"board unavailable"},500):json(req,data);
+  }
+  if(req.method!=="POST") return json(req,{error:"method not allowed"},405);
+
+  let b:any; try{b=await req.json()}catch{return json(req,{error:"invalid json"},400)}
+  const mode=b.mode, score=Number(b.score), actualMs=b.actualMs==null?null:Number(b.actualMs), date=b.challengeDate, tag=cleanTag(b.playerTag);
+  if(!["sprint","daily"].includes(mode)||!Number.isInteger(score)||!validDate(date)||!validUuid(b.clientId)||!tag) return json(req,{error:"invalid payload"},400);
+  if(mode==="sprint"&&(score<0||score>5000||actualMs==null||!Number.isInteger(actualMs)||actualMs<0||actualMs>10000)) return json(req,{error:"invalid sprint score"},400);
+  if(mode==="daily"&&(score<0||score>100||actualMs!==null)) return json(req,{error:"invalid daily score"},400);
+
+  const fp=await fingerprint(req);
+  const since=new Date(Date.now()-60*60*1000).toISOString();
+  const {count}=await db.from("off_by_attempts").select("id",{count:"exact",head:true}).eq("request_fingerprint",fp).gte("created_at",since);
+  if((count||0)>=60) return json(req,{error:"rate limit"},429);
+
+  const {error:insertError}=await db.from("off_by_attempts").insert({
+    challenge_date:date, mode, score, actual_ms:mode==="sprint"?actualMs:null,
+    client_id:b.clientId, player_tag:tag, request_fingerprint:fp
+  });
+  if(insertError) return json(req,{error:"score not saved"},500);
+
+  const {data,error}=await db.rpc("off_by_leaderboard",{p_mode:mode,p_date:date,p_limit:10});
+  return error?json(req,{error:"score saved; board unavailable"},500):json(req,data);
+});
