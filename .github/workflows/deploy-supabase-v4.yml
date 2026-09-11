@@ -1,0 +1,71 @@
+name: Deploy OFF BY v4 Backend
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_ACCESS_TOKEN" || { echo 'Missing SUPABASE_ACCESS_TOKEN'; exit 1; }
+          test -n "$SUPABASE_DB_PASSWORD" || { echo 'Missing SUPABASE_DB_PASSWORD'; exit 1; }
+          test -n "$SUPABASE_PROJECT_ID" || { echo 'Missing SUPABASE_PROJECT_ID'; exit 1; }
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Apply database migrations
+        run: supabase db push
+
+      - name: Rotate leaderboard fingerprint salt
+        shell: bash
+        run: |
+          set -euo pipefail
+          OFFBY_HASH_SALT="$(openssl rand -hex 48)"
+          supabase secrets set OFFBY_HASH_SALT="$OFFBY_HASH_SALT" --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Deploy score function
+        run: supabase functions deploy off-by-score --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Enable leaderboard frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > config.js <<EOF
+          window.OFFBY_CONFIG = Object.freeze({
+            leaderboardEnabled: true,
+            apiUrl: "https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/off-by-score",
+          });
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Enable v4 global leaderboard"
+            git push
+          fi
+
+      - name: Summary
+        run: |
+          echo "Backend URL: https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/off-by-score"
+          echo "Leaderboard frontend enabled. GitHub Pages deploy will follow the config commit."
