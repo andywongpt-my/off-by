@@ -4,25 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f4f3eb">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
 <meta name="description" content="Hold for exactly one second with no timer. See how many milliseconds you're off, then challenge a friend.">
 <meta property="og:title" content="OFF BY. — One second. No clock. Just vibes.">
 <meta property="og:description" content="How good is your internal clock? Hold for one second, get your score, and challenge someone to beat it.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://andywongpt-my.github.io/off-by/">
-<meta property="og:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=4">
+<meta property="og:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=5">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="OFF BY. — How many ms are you off?">
 <meta name="twitter:description" content="No timer. No progress bar. Just your internal clock.">
-<meta name="twitter:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=4">
+<meta name="twitter:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=5">
 <title>OFF BY. — One second. No clock. Just vibes.</title>
-<link rel="stylesheet" href="style.css?v=4">
-<link rel="stylesheet" href="leaderboard.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="leaderboard.css?v=5">
+<link rel="stylesheet" href="mobile.css?v=5">
 </head>
 <body>
 <div class="wrap">
-<header class="top"><div class="logo">OFF BY<b>.</b></div><div class="badge">DAILY CHALLENGE LIVE</div><div class="mini">ONE TINY GAME · ONE BIG EGO CHECK</div></header>
+<header class="top"><div class="logo">OFF BY<b>.</b></div><div class="badge">DAILY LIVE</div><div class="mini">ONE TINY GAME · ONE BIG EGO CHECK</div></header>
 <main>
 <section class="hero"><div class="eyebrow">YOUR INTERNAL CLOCK, EXPOSED</div><h1>One second.<br>No clock.<br>Just <em>vibes.</em></h1><p>Hold the button for exactly one second. There is no timer to watch. Release when your brain says “now,” then discover exactly how wrong you were.</p><div class="stats"><div class="stat"><span>DAILY BEST</span><strong id="bestDaily">—</strong></div><div class="stat"><span>1-SEC BEST</span><strong id="bestSprint">—</strong></div><div class="stat"><span>DAILY STREAK</span><strong id="streak">0🔥</strong></div></div><div class="pitch">Fast hook first: one attempt, instant result. Come back for the Daily Five — everyone gets the same five targets each day.</div></section>
 <section class="game">
@@ -52,7 +58,7 @@
     </div>
     <div class="identity">
       <label for="playerTag">Your board name</label>
-      <div><input id="playerTag" maxlength="16" autocomplete="off" spellcheck="false"><button id="saveTag">Save</button></div>
+      <div><input id="playerTag" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text"><button id="saveTag">Save</button></div>
     </div>
   </div>
   <div id="boardStatus" class="board-status">Loading global board…</div>
@@ -62,8 +68,9 @@
 
 <footer><span>NO LOGIN · SCORES STAY IN YOUR BROWSER</span><span>Challenge scores are self-reported. Brag responsibly.</span></footer>
 </div><div class="toast" id="toast">Copied.</div>
-<script src="config.js?v=4"></script>
-<script src="app.js?v=3" defer></script>
-<script src="leaderboard.js?v=4" defer></script>
+<script src="config.js?v=5"></script>
+<script src="app.js?v=5" defer></script>
+<script src="leaderboard.js?v=5" defer></script>
+<script src="mobile.js?v=5" defer></script>
 </body>
 </html>
