@@ -1,0 +1,2 @@
+[functions.off-by-score]
+verify_jwt = false
