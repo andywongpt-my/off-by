@@ -12,7 +12,7 @@ jobs:
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_PROJECT_ID: wfjcscoymbqujecenscq
 
     steps:
       - name: Checkout
@@ -24,7 +24,6 @@ jobs:
           set -euo pipefail
           test -n "$SUPABASE_ACCESS_TOKEN" || { echo 'Missing SUPABASE_ACCESS_TOKEN'; exit 1; }
           test -n "$SUPABASE_DB_PASSWORD" || { echo 'Missing SUPABASE_DB_PASSWORD'; exit 1; }
-          test -n "$SUPABASE_PROJECT_ID" || { echo 'Missing SUPABASE_PROJECT_ID'; exit 1; }
 
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
@@ -47,7 +46,7 @@ jobs:
           cat > config.js <<EOF
           window.OFFBY_CONFIG = Object.freeze({
             leaderboardEnabled: true,
-            apiUrl: "https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/off-by-score",
+            apiUrl: "https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/off-by-score"
           });
           EOF
           git config user.name "github-actions[bot]"
