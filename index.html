@@ -9,15 +9,16 @@
 <meta property="og:description" content="How good is your internal clock? Hold for one second, get your score, and challenge someone to beat it.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://andywongpt-my.github.io/off-by/">
-<meta property="og:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=3">
+<meta property="og:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=4">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="OFF BY. — How many ms are you off?">
 <meta name="twitter:description" content="No timer. No progress bar. Just your internal clock.">
-<meta name="twitter:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=3">
+<meta name="twitter:image" content="https://andywongpt-my.github.io/off-by/og-card.png?v=4">
 <title>OFF BY. — One second. No clock. Just vibes.</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="leaderboard.css?v=4">
 </head>
 <body>
 <div class="wrap">
@@ -41,8 +42,28 @@
 <div class="actions"><a class="action primary" id="xShare" target="_blank" rel="noopener">Post challenge on X ↗</a><button class="action native" id="nativeShare">Share challenge</button><button class="action copy" id="copy">Copy result</button><button class="action save" id="save">Save score card</button><button class="action again" id="again">Rematch ↻</button><button class="action daily" id="dailyCta">Play Daily Five →</button></div>
 </div></div></section>
 </main>
+
+<section id="globalBoard" class="global-board hidden" aria-live="polite">
+  <div class="board-head">
+    <div>
+      <div class="board-kicker">GLOBAL · BROWSER-MEASURED</div>
+      <h2 id="boardTitle">Today’s One-Second Board</h2>
+      <p><strong id="globalCount">—</strong> players today · best score per device</p>
+    </div>
+    <div class="identity">
+      <label for="playerTag">Your board name</label>
+      <div><input id="playerTag" maxlength="16" autocomplete="off" spellcheck="false"><button id="saveTag">Save</button></div>
+    </div>
+  </div>
+  <div id="boardStatus" class="board-status">Loading global board…</div>
+  <div id="leaderRows" class="leader-rows"></div>
+  <div class="board-foot">Community leaderboard. Scores are measured in-browser and are not tamper-proof.</div>
+</section>
+
 <footer><span>NO LOGIN · SCORES STAY IN YOUR BROWSER</span><span>Challenge scores are self-reported. Brag responsibly.</span></footer>
 </div><div class="toast" id="toast">Copied.</div>
+<script src="config.js?v=4"></script>
 <script src="app.js?v=3" defer></script>
+<script src="leaderboard.js?v=4" defer></script>
 </body>
 </html>
