@@ -1,0 +1,25 @@
+# Environment files / local secrets
+.env
+.env.*
+!.env.example
+
+# Supabase local state and function secrets
+.supabase/
+supabase/.temp/
+supabase/functions/.env
+supabase/functions/.env.*
+
+# Common secret/private-key files
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+
+# Local tooling / OS noise
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
